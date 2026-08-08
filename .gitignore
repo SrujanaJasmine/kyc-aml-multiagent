@@ -1,0 +1,101 @@
+# =====================================================================
+# FRAML_PROJECT
+# The data/ folder is ~22 GB and the SQLite DBs are ~2.4 GB.
+# GitHub rejects any single file over 100 MB, so ALL of it stays local.
+# =====================================================================
+
+# ---- Datasets (regenerate/download locally, see data/README.md) ----
+data/*
+!data/README.md
+*.csv
+*.parquet
+*.tsv
+
+# ---- Databases (built by customer_db.py / memory.py) ----
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+
+# ---- Model artifacts ----
+# ml_models/artifacts/*.joblib are small (<10 MB) and ARE committed so the
+# pipeline is reproducible. Uncomment the next line to exclude them instead.
+# ml_models/artifacts/
+*.pkl
+*.h5
+*.pt
+*.pth
+*.onnx
+*.bin
+
+# ---- FAISS / vector stores ----
+*.faiss
+*.index
+faiss_index/
+vectorstore/
+chroma_db/
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ---- Virtual environments ----
+.venv/
+venv/
+env/
+ENV/
+.conda/
+
+# ---- Secrets ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+service-account*.json
+
+# ---- Jupyter ----
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+profile_default/
+ipython_config.py
+
+# ---- Testing / linting caches ----
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# ---- Node (npx pulls @bytebase/dbhub for the MCP server) ----
+node_modules/
+package-lock.json
+npm-debug.log*
+
+# ---- Logs ----
+logs/
+*.log
+
+# ---- IDE / editors ----
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+desktop.ini
