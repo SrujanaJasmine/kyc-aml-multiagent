@@ -93,6 +93,37 @@ def _clean_for_sqlite(df: pd.DataFrame) -> pd.DataFrame:
     return df.astype(object).where(df.notna(), None)
 
 
+def _load_csv_mapped(csv_path: str, column_map: dict[str, str]) -> pd.DataFrame:
+    """
+    Reads only the CSV columns in `column_map` that actually exist in this
+    file, and fills any mapped db column whose source column is missing
+    with None. This tolerates a cleaned/pre-processed CSV that dropped or
+    never had some columns — e.g. a test split commonly drops the label
+    column (Credit_Score) entirely, or a train/test pair may not have
+    identical schemas after separate cleaning passes.
+
+    Without this, pd.read_csv(..., usecols=[...]) raises a ValueError the
+    moment ANY requested column is missing, even if the rest are fine.
+    """
+    header = pd.read_csv(csv_path, nrows=0).columns.tolist()
+    available_csv_cols = [c for c in column_map if c in header]
+    missing_csv_cols = [c for c in column_map if c not in header]
+
+    if missing_csv_cols:
+        print(
+            f"[customer_db] {csv_path}: {len(missing_csv_cols)} expected "
+            f"column(s) not found, storing as NULL: {missing_csv_cols}"
+        )
+
+    df = pd.read_csv(csv_path, usecols=available_csv_cols)
+    df = df.rename(columns=column_map)
+
+    for csv_col in missing_csv_cols:
+        df[column_map[csv_col]] = None
+
+    return df[list(column_map.values())]  # enforce consistent column order
+
+
 # ---------------------------------------------------------------------------
 # Schema creation
 # ---------------------------------------------------------------------------
@@ -103,15 +134,15 @@ def init_db() -> None:
         conn.executescript(
             """
             CREATE TABLE IF NOT EXISTS customers (
-                customer_id             TEXT PRIMARY KEY,
-                name                    TEXT,
-                ssn                     TEXT,
-                age                     INTEGER,
+                customer_id            TEXT PRIMARY KEY,
+                name                   TEXT,
+                ssn                    TEXT,
+                age                    INTEGER,
                 occupation              TEXT,
-                annual_income           REAL,
-                monthly_inhand_salary   REAL,
-                num_bank_accounts       INTEGER,
-                num_credit_card         INTEGER
+                annual_income          REAL,
+                monthly_inhand_salary  REAL,
+                num_bank_accounts      INTEGER,
+                num_credit_card        INTEGER
             );
 
             CREATE TABLE IF NOT EXISTS credit_applications (
@@ -257,15 +288,15 @@ def load_customers_from_csv(csv_path: str) -> None:
     repeat — dedupe by Customer_ID, keeping the first row seen.
     `INSERT OR IGNORE` on the customer_id PK also protects re-runs.
     """
-    df = pd.read_csv(csv_path, usecols=list(_CUSTOMER_COLUMNS.keys()))
-    df = df.rename(columns=_CUSTOMER_COLUMNS)
+    df = _load_csv_mapped(csv_path, _CUSTOMER_COLUMNS)
     df = df.drop_duplicates(subset="customer_id", keep="first")
 
     # Age / Num_Bank_Accounts / Num_Credit_Card come in as float64 in the
-    # CSV (e.g. 28.0) — round then cast to nullable Int64 so a missing
-    # value doesn't force the whole column to stay float.
+    # CSV (e.g. 28.0) — coerce first in case any stray non-numeric values
+    # slipped through cleaning, then round and cast to nullable Int64 so a
+    # missing value doesn't force the whole column to stay float.
     for col in ("age", "num_bank_accounts", "num_credit_card"):
-        df[col] = df[col].round().astype("Int64")
+        df[col] = pd.to_numeric(df[col], errors="coerce").round().astype("Int64")
 
     df = _clean_for_sqlite(df)  # pd.NA/np.nan -> None, or sqlite3 raises on insert
 
@@ -288,27 +319,13 @@ def load_credit_applications_from_csv(csv_path: str) -> None:
     customers, no dedup is needed — the CSV's `ID` column is already
     unique per row and becomes application_id directly.
 
-    Run `load_customers_from_csv` on the same file first — customer_id is
-    a foreign key here and PRAGMA foreign_keys is ON.
-
-    Not every credit CSV has every column in _APPLICATION_COLUMNS — the
-    Kaggle test split, in particular, omits `Credit_Score` since that's
-    the label being predicted. Missing columns are filled with NULL
-    instead of failing the whole load, which also happens to be the
-    semantically right outcome: a test-split row becomes a "pending"
-    application with no score yet, i.e. exactly what CDA is meant to
-    assess.
+    Doesn't require load_customers_from_csv to have already run on this
+    exact file — any customer_id referenced here but not yet in
+    `customers` gets a bare stub row first (customer_id only, everything
+    else NULL), so a train/test pair with a different customer population
+    never trips the customer_id foreign key.
     """
-    header = pd.read_csv(csv_path, nrows=0).columns.tolist()
-    available_csv_cols = [c for c in _APPLICATION_COLUMNS if c in header]
-    missing_csv_cols = [c for c in _APPLICATION_COLUMNS if c not in header]
-    if missing_csv_cols:
-        print(f"{csv_path}: missing columns {missing_csv_cols} — inserting as NULL")
-
-    df = pd.read_csv(csv_path, usecols=available_csv_cols)
-    df = df.rename(columns=_APPLICATION_COLUMNS)
-    for csv_col in missing_csv_cols:
-        df[_APPLICATION_COLUMNS[csv_col]] = None
+    df = _load_csv_mapped(csv_path, _APPLICATION_COLUMNS)
 
     loan_cols = [_APPLICATION_COLUMNS[c] for c in _LOAN_TYPE_CSV_COLUMNS]
     df[loan_cols] = df[loan_cols].fillna(0)
@@ -318,6 +335,14 @@ def load_credit_applications_from_csv(csv_path: str) -> None:
     cols = list(_APPLICATION_COLUMNS.values())
     conn = get_connection()
     try:
+        # Stub in any customer_id referenced here but missing from
+        # `customers`, so the FK on credit_applications.customer_id never fails.
+        unique_customers = df["customer_id"].dropna().unique().tolist()
+        conn.executemany(
+            "INSERT OR IGNORE INTO customers (customer_id) VALUES (?)",
+            [(cid,) for cid in unique_customers],
+        )
+
         conn.executemany(
             f"""INSERT OR IGNORE INTO credit_applications ({", ".join(cols)})
                 VALUES ({", ".join("?" for _ in cols)})""",
@@ -346,8 +371,19 @@ def load_transactions_from_csv(csv_path: str, id_prefix: str | None = None) -> N
     # Not using usecols here: "Account" appears twice in the raw header,
     # and usecols name-matching against a duplicated column is unreliable.
     # Read the full file, let pandas mangle the duplicate to "Account.1",
-    # then select by name afterward.
+    # then select by name afterward — tolerating any column this
+    # particular file doesn't have.
+    header = pd.read_csv(csv_path, nrows=0).columns.tolist()
+    missing_csv_cols = [c for c in _TRANSACTION_COLUMNS if c not in header]
+    if missing_csv_cols:
+        print(
+            f"[customer_db] {csv_path}: {len(missing_csv_cols)} expected "
+            f"column(s) not found, storing as NULL: {missing_csv_cols}"
+        )
+
     df = pd.read_csv(csv_path)
+    for csv_col in missing_csv_cols:
+        df[csv_col] = None
     df = df.rename(columns=_TRANSACTION_COLUMNS)[list(_TRANSACTION_COLUMNS.values())]
 
     prefix = id_prefix or os.path.splitext(os.path.basename(csv_path))[0].upper()
@@ -485,11 +521,9 @@ def flag_transaction(transaction_id: str, flagged: bool = True) -> None:
 if __name__ == "__main__":
     init_db()
     load_customers_from_csv("../data/cleaned_credit/cleaned_train.csv")
-    load_customers_from_csv("../data/cleaned_credit/cleaned_test.csv")
-    load_credit_applications_from_csv("../data/cleaned_credit/cleaned_train.csv")
-    load_credit_applications_from_csv("../data/cleaned_credit/cleaned_test.csv")
+    load_credit_applications_from_csv("../data/cleaned_credit/data/cleaned_train.csv")
     load_transactions_from_csv("../data/simulated/customer_transactions_train.csv", id_prefix="TRAIN")
-    load_transactions_from_csv("../data/simulated/customer_transactions_test.csv", id_prefix="TEST")
+
 
     conn = get_connection()
     sample_customer_id = conn.execute("SELECT customer_id FROM customers LIMIT 1").fetchone()[0]

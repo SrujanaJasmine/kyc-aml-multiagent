@@ -20,7 +20,7 @@ import os
 
 from langchain_mcp_adapters.client import MultiServerMCPClient
 
-DB_PATH = os.path.abspath("customer_data.db")
+DB_PATH = os.path.abspath("customer_data.db").replace("\\", "/")
 
 MCP_SERVERS = {
     "customer_db": {

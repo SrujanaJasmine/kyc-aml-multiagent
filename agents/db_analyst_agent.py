@@ -8,11 +8,18 @@ CUST002 made this month". It reasons and calls execute_sql/search_objects
 through the DBHub MCP server (read-only) until it has an answer.
 """
 
+import os
+
 from langchain_groq import ChatGroq
 from langgraph.prebuilt import create_react_agent
 
 from mcp_db_tools import get_db_tools
 from state import WorkerState
+
+# Groq production model with tool-calling support. Override with the
+# GROQ_MODEL env var — e.g. "openai/gpt-oss-120b" is faster and cheaper,
+# "llama-3.1-8b-instant" is cheapest if you're only smoke-testing.
+GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
 # Built once and cached, since spinning up the MCP subprocess + tool list
 # on every call would be slow.
@@ -23,7 +30,10 @@ async def _get_db_agent():
     global _db_agent
     if _db_agent is None:
         tools = await get_db_tools()
-        model = ChatAnthropic(model="claude-sonnet-4-6")
+        # temperature=0: this agent writes SQL against compliance data, so
+        # we want the same question to produce the same query every time.
+        # ChatGroq reads GROQ_API_KEY from the environment.
+        model = ChatGroq(model=GROQ_MODEL, temperature=0)
         _db_agent = create_react_agent(
             model,
             tools,

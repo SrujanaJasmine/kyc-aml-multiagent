@@ -80,7 +80,8 @@ pip install -r requirements.txt
 
 Node.js is also required — `mcp_db_tools.py` launches the DBHub MCP server via `npx`.
 
-Then copy `.env.example` to `.env` and add your `ANTHROPIC_API_KEY`.
+Then copy `.env.example` to `.env` and add your `GROQ_API_KEY`
+(free key from [console.groq.com/keys](https://console.groq.com/keys)).
 
 ## Data
 

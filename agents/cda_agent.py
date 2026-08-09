@@ -4,7 +4,7 @@ cda_agent.py
 Credit Assessment (CDA) worker for the multi-agent compliance graph.
 Wired into `graph.py` as `builder.add_node("cda_agent", cda_agent)` and
 reached only via `route_to_workers`'s `Send("cda_agent", {"type": "CDA",
-"input": item})` in graph_state.py.
+"input": item})` in orchestrator.py.
 
 Unlike the earlier version of this file, CDA does NOT own its own SQLite
 table or DB connection. `customer_db.py` is the single shared data layer
@@ -44,7 +44,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 
 from customer_db import get_credit_application
-from graph_state import WorkerState
+from state import WorkerState
 
 # ---------------------------------------------------------------------------
 # Decision thresholds — tune these against your validation set / policy doc
