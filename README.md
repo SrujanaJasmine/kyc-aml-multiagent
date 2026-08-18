@@ -42,8 +42,8 @@ the written rules disagree.
 
 Each risk agent carries **two independent assessors**: a gradient-boosted model and
 a set of deterministic rules tied to published regulation. They answer different
-questions — *how does this resemble past cases* versus *which written standard does
-this breach* — and they fail differently. A model can miss a novel pattern; a
+questions *how does this resemble past cases* versus *which written standard does
+this breach* and they fail differently. A model can miss a novel pattern; a
 threshold cannot miss a $10,001 cash deposit. A model can flag something
 inexplicable; a rule always states the observed value against the published limit.
 
@@ -54,48 +54,6 @@ Only the rules can support a regulatory disclosure. Under Regulation B a credito
 must give the *specific principal reasons* for adverse action, and "the model scored
 it low" is explicitly insufficient.
 
-
-
-## Repository layout
-.
-├── graph.py                    the graph definition + a 20-scenario demonstration
-├── evaluate_system.py          full-scale evaluation of the decision layer
-├── config.py                   .env loading and shared paths
-│
-├── agents/
-│   ├── state.py                GraphState / WorkerState schemas
-│   ├── orchestrator.py         Send-based fan-out to the workers
-│   ├── kyc_agent.py            customer standing
-│   ├── cda_agent.py            credit assessment
-│   ├── aml_agent.py            transaction screening
-│   ├── explanation_agent.py    report synthesis
-│   └── audit_agent.py          audit persistence
-│
-├── policies/
-│   ├── credit_rules.py         12 lending rules, US sources
-│   ├── references.md           full citations for the credit rules
-│   ├── aml_rules.py            8 BSA/AML rules
-│   ├── aml_references.md       full citations for the AML rules
-│   └── retrieval.py            optional FAISS lookup of policy wording
-│
-├── ml_models/
-│   ├── credit_risk_model.py    CreditScorer — the credit model's inference contract
-│   ├── feature_mapping.py      customer-table fields → model feature names
-│   ├── data_splits.py          deterministic four-way split by customer
-│   ├── train_model.py          credit model training
-│   ├── evaluate_model.py       credit metrics + figures
-│   ├── aml_features.py         54 AML features incl. graph and velocity
-│   ├── train_aml_model.py      AML model training
-│   ├── evaluate_aml_model.py   AML metrics + figures
-│   ├── tune_models.py          Optuna search for both models
-│   └── artifacts/              trained models, thresholds, metrics
-│
-├── database/customer_db.py     schema, CSV loaders, accessors
-├── memory/memory.py            LangGraph checkpoints + agent_history table
-├── COMMANDS.md                 every command, in order, with expected outputs
-├── EDA/                        notebooks: credit EDA, transaction simulation
-├── data/                       datasets (gitignored — see data/README.md)
-└── reports/                    generated figures, evaluations and demo runs
 
 
 ### Two databases, deliberately separate
@@ -124,14 +82,14 @@ Copy `.env.example` to `.env` and add a `GROQ_API_KEY` (free from
 [console.groq.com/keys](https://console.groq.com/keys)). Without it the explanation
 agent falls back to a deterministic report rather than failing.
 
-Datasets are not in the repository — see [`data/README.md`](data/README.md) for
+Datasets are not in the repository, check [`data/README.md`](data/README.md) for
 sources and the expected layout.
 
 
 
 ## Running it
 
-The short version is below. [`COMMANDS.md`](COMMANDS.md) has the full runbook — every
+The short version is below. [`COMMANDS.md`](COMMANDS.md) has the full runbook, every
 flag, what each step writes, and what to do when something breaks.
 
 ```powershell
@@ -159,7 +117,7 @@ python evaluate_system.py
 python graph.py
 ```
 
-One-off, and worth doing before step 6 — without these indexes each AML assessment
+One-off, and worth doing before step 6 without these indexes each AML assessment
 scans the full transaction table:
 
 ```powershell
@@ -172,7 +130,7 @@ python -c "import sqlite3; c=sqlite3.connect('database/customer_data.db'); c.exe
 |---|---|
 | Demonstration reports (Markdown + text, with an index) | `reports/run_<timestamp>/` |
 | Full evaluation, tables and per-item CSVs | `reports/evaluation_<timestamp>/` |
-| Model figures — ROC, PR, confusion, thresholds, importance | `reports/figures/` |
+| Model figures (ROC, PR, confusion, thresholds, importance) | `reports/figures/` |
 | Tuning write-ups | `reports/tuning/` |
 | Audit trail | `memory/system_memory.db`, `memory/agent_history.txt` |
 
@@ -181,15 +139,15 @@ python -c "import sqlite3; c=sqlite3.connect('database/customer_data.db'); c.exe
 
 `ml_models/data_splits.py` partitions the labelled data **by customer** into
 train 60% / validation 15% / test 15% / system 10%. Splitting by row would place the
-same customer on both sides — the credit data is a monthly panel — and inflate every
+same customer on both sides,the credit data is a monthly panel, and inflate every
 metric. Assignment is an MD5 of the customer id, so the partition is identical on
 every machine with no seed to drift.
 
 Both models are fitted on `train` only. `system` is touched by nothing but the
 end-to-end demonstration, so `graph.py` runs on data neither model has seen.
 
-`evaluate_system.py` reports an **ablation** — model only, rules only, and the
-agent's combined logic, scored identically — so the architecture has to demonstrate
+`evaluate_system.py` reports an **ablation**, model only, rules only, and the
+agent's combined logic, scored identically, so the architecture has to demonstrate
 what the combination buys rather than assert it.
 
 
@@ -208,7 +166,7 @@ These matter for reading any number this project produces.
   list, because an empty result would read as "screened, nothing found".
 - **Policy thresholds are starting points** drawn from published sources. Several
   fire on a large share of this dataset, which says more about the dataset's
-  distributions than about the applicants — the evaluation quantifies this.
+  distributions than about the applicants, the evaluation quantifies this.
 
 ---
 
@@ -216,10 +174,10 @@ These matter for reading any number this project produces.
 
 Policy rules are tied to published US sources with full citations in
 [`policies/references.md`](policies/references.md) (credit) and
-[`policies/aml_references.md`](policies/aml_references.md) (AML) — Regulation B,
+[`policies/aml_references.md`](policies/aml_references.md) (AML), Regulation B,
 the FFIEC BSA/AML Examination Manual, Fannie Mae's Selling Guide, 31 CFR Chapter X,
 31 USC 5324, and FinCEN advisories.
 
-Each rule carries an `authority` field — `regulation`, `underwriting` or `guidance` —
+Each rule carries an `authority` field such as `regulation`, `underwriting` or `guidance`
 so binding obligations are never presented alongside advisory red flags as if they
 carried the same weight.
