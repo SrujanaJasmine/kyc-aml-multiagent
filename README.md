@@ -1,4 +1,4 @@
-# FRAML — Multi-Agent Fraud, AML and Credit Risk Assessment
+# A Multi-Agent System for KYC/AML Compliance and Credit Assessment
 
 A LangGraph orchestrator–worker system for financial compliance. A supervisor node
 fans a batch of assessment items out to specialist agents in parallel; each agent
@@ -35,7 +35,7 @@ the written rules disagree.
 | `kyc_agent` | Establishes whether the party is an existing customer, a new one, or dormant, and summarises the depth of the relationship |
 | `cda_agent` | Scores a credit application with XGBoost, tests it against US lending policy, and returns Approve / Review / Decline with Regulation B adverse-action reasons |
 | `aml_agent` | Scores a transaction, tests it against BSA/AML obligations, and rolls the customer's recent activity up to the SAR aggregation threshold |
-| `explanation_agent` | Synthesises the findings into a report — a deterministic verdict table plus an LLM-written narrative |
+| `explanation_agent` | Synthesises the findings into a report, a deterministic verdict table plus an LLM-written narrative |
 | `audit_agent` | Writes every agent call to SQLite and to a human-readable text log |
 
 ### The design idea worth knowing
