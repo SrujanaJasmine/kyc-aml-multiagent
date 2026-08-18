@@ -1,0 +1,45 @@
+> **Demonstration run** — scenario 2 of 20: Laundering activity on file  
+> Data source: `system` split, held out from all model training.  
+> Thread `demo-20260816T194713-02_laundering` · generated 2026-08-16 19:47 UTC.
+
+# Compliance Assessment Report
+
+| | |
+|---|---|
+| Customer | CUS_0x6172 (Lefteris Papadimasd, Manager) |
+| Assessed | 2026-08-16 19:48 UTC |
+| Agents run | KYC, CDA, AML |
+
+## Verdicts at a glance
+
+| Agent | Verdict | Detail |
+|---|---|---|
+| KYC | Existing | 8 application(s), 460 transaction(s), 181 days on file |
+| CDA | Decline | risk 0.8116 vs 0.28 threshold; 4 rule(s) breached (DELINQ-COUNT, UTIL-30-GUIDANCE, MINPAY-ONLY, INQUIRY-6) |
+| AML | Enhanced monitoring | score 0.9977 vs 0.9; LAYERING-CYCLE; roll-up 1/34 flagged, SAR aggregate False |
+
+## Summary
+The credit application of Lefteris Papadimasd, an existing customer, was assessed and resulted in a decline decision due to a high risk score of 81.2%, which exceeds the auto-decline band, and the breach of one high-severity rule. The primary reason for this decision is the customer's history of delayed payments, with 20 observed instances, significantly exceeding the threshold of 3 occurrences.
+
+## Credit Assessment
+The credit model assigned a probability of 0.8116, which is above the model threshold of 0.28, indicating a high risk. The decision to decline the application was made due to this high risk score and the breach of one high-severity rule. The top SHAP features driving this decision include the changed credit limit, interest rate, outstanding debt, number of credit cards, and credit history age, all of which increase the risk.
+
+## Policy and Standards Breaches
+The following rules were breached:
+- **More than 3 delayed payments on file**: The customer has 20 delayed payments, exceeding the threshold of 3 occurrences. This rule is in place because repeated late payments are a strong predictor of default.
+- **Revolving utilization above 30%**: The customer's utilization is 34.61%, exceeding the threshold of 30%. This is considered a soft signal, as utilization is scored on a sliding scale, but it becomes a concern when combined with delinquency.
+- **Paying only the minimum amount due**: The customer is only paying the minimum amount due, which barely covers the interest and does not reduce the principal amount. This behavior is a recognized marker of revolving-debt dependence.
+- **More than 6 hard credit inquiries**: The customer has 8 hard credit inquiries, exceeding the threshold of 6. This suggests credit-seeking behavior, which can precede over-extension and application fraud.
+
+## KYC and AML Findings
+The AML agent found a breached rule:
+- **Funds returning to their origin**: The transaction is part of a 3-hop cycle, which serves no commercial purpose and is a classic layering technique to obscure the origin of funds. The model assigned a high probability of 0.9977, indicating a suspicious transaction.
+
+## Data Quality Caveats
+There are no rules listed as not evaluated, indicating that all necessary data was available for the assessment.
+
+## Recommended Next Steps
+Based on the findings, it is recommended to:
+- Decline the credit application due to the high risk score and breached rules.
+- Implement enhanced monitoring on the customer's account due to the suspicious transaction flagged by the AML model.
+- Review the customer's credit history and utilization to determine the best course of action to mitigate potential risks.

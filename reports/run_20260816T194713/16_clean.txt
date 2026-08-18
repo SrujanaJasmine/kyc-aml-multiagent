@@ -1,0 +1,56 @@
+> Demonstration run — scenario 16 of 20: Established customer, clean profile  
+> Data source: `system` split, held out from all model training.  
+> Thread `demo-20260816T194713-16_clean` · generated 2026-08-16 19:47 UTC.
+
+
+Compliance Assessment Report
+----------------------------
+
+| | |
+|---|---|
+| Customer | CUS_0x1096 (Edward Krudyk, Lawyer) |
+| Assessed | 2026-08-16 19:53 UTC |
+| Agents run | KYC, CDA, AML |
+
+
+Verdicts at a glance
+--------------------
+
+| Agent | Verdict | Detail |
+|---|---|---|
+| KYC | Existing | 8 application(s), 283 transaction(s), 180 days on file |
+| CDA | Review | risk 0.0223 vs 0.28 threshold; 2 rule(s) breached (DELINQ-COUNT, UTIL-30-GUIDANCE) |
+| AML | Escalate for analyst review | score 0.0 vs 0.9; SAR-5K; roll-up 0/1 flagged, SAR aggregate False |
+
+
+Summary
+-------
+The credit application of Edward Krudyk, an existing customer, was assessed for creditworthiness and potential financial crime. Despite the model indicating a low risk of 2.2%, the application was flagged for review due to two breached rules: more than three delayed payments on file and revolving utilization above 30%. The most significant reason for this decision is the repeated pattern of delayed payments, which is a strong predictor of default.
+
+
+Credit Assessment
+-----------------
+The credit model assigned a probability of 2.2% to the application, which is below the threshold of 28%. However, the decision to review the application was made due to the two breached rules. The top SHAP features that drove this decision include outstanding debt, credit mix standard, interest rate, number of credit inquiries, and credit history age, all of which decrease the risk of default.
+
+
+Policy and Standards Breaches
+-----------------------------
+Two rules were breached in this application:
+* More than three delayed payments on file: The observed value was 20, which exceeds the threshold of 3 occurrences. This rule exists because a repeated pattern of delayed payments is a strong predictor of default.
+* Revolving utilization above 30%: The observed value was 38.24%, which exceeds the threshold of 30%. This rule exists because high utilization can indicate a higher risk of default, although it is considered a soft signal when not combined with delinquency.
+
+
+KYC and AML Findings
+--------------------
+The AML agent found one breached rule:
+* Activity aggregating $5,000 or more: The observed value was $744,190.29, which exceeds the threshold of $5,000. This rule exists because transactions above $5,000 must be reported to FinCEN if they are suspicious. Although the model score is below the cutoff, the transaction's high value and the presence of a regulatory threshold crossing warrant further review.
+
+
+Data Quality Caveats
+--------------------
+No data quality issues were reported in this assessment.
+
+
+Recommended Next Steps
+----------------------
+The reviewer should escalate this application for analyst review due to the breached rules and the high value of the transaction. The analyst should carefully evaluate the customer's credit history, payment behavior, and transaction activity to determine the appropriate course of action. Additionally, the reviewer should verify the customer's identity and ensure that all necessary documentation is in order.

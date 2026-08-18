@@ -1,0 +1,58 @@
+> Demonstration run — scenario 7 of 20: Elevated credit risk  
+> Data source: `system` split, held out from all model training.  
+> Thread `demo-20260816T194713-07_high_risk_credit` · generated 2026-08-16 19:47 UTC.
+
+
+Compliance Assessment Report
+----------------------------
+
+| | |
+|---|---|
+| Customer | CUS_0xb95f (Ashleyk, Writer) |
+| Assessed | 2026-08-16 19:49 UTC |
+| Agents run | KYC, CDA, AML |
+
+
+Verdicts at a glance
+--------------------
+
+| Agent | Verdict | Detail |
+|---|---|---|
+| KYC | Existing | 8 application(s), 457 transaction(s), 181 days on file |
+| CDA | Decline | risk 0.7086 vs 0.28 threshold; 5 rule(s) breached (DELINQ-30-REPORTABLE, DELINQ-COUNT, UTIL-30-GUIDANCE, INQUIRY-6) |
+| AML | No action | score 0.0 vs 0.9; roll-up 0/1 flagged, SAR aggregate False |
+
+
+Summary
+-------
+The credit application of Ashleyk, an existing customer, was assessed and resulted in a decline decision due to a high risk score and breaches of multiple rules. The primary reason for the decline is the customer's history of delayed payments, with 10 instances observed, exceeding the threshold of 3 occurrences.
+
+
+Credit Assessment
+-----------------
+The credit model assigned a probability of 0.7086, which is above the model threshold of 0.28, indicating a high risk. The decision to decline the application was made due to this high risk score and the breaches of two high-severity rules. The top SHAP features driving this decision include outstanding debt, interest rate, delay from due date, changed credit limit, and the number of credit cards, with outstanding debt and interest rate increasing the risk.
+
+
+Policy and Standards Breaches
+-----------------------------
+The following rules were breached:
+- Payment more than 30 days past due: The observed value of 52 days exceeds the threshold of 30 days. This rule exists to identify reportable delinquency, which is a significant indicator of credit risk.
+- More than 3 delayed payments on file: The observed value of 10 delayed payments exceeds the threshold of 3 occurrences. This rule exists to identify repeated patterns of late payments, which are a strong predictor of default.
+- Revolving utilization above 30%: The observed value of 39.28% exceeds the threshold of 30%. This rule exists to advise keeping credit utilization at or below 30% of the total limit, as recommended by the CFPB.
+- More than 6 hard credit inquiries: The observed value of 9 inquiries exceeds the threshold of 6 inquiries. This rule exists to identify credit-seeking behavior, which may indicate over-extension or application fraud.
+- More than 5 active loans: The observed value of 7 loans exceeds the threshold of 5 loans. This rule exists to ensure the reasonable good-faith ability-to-repay determination, as numerous simultaneous obligations can fragment cash flow and make total exposure harder to verify.
+
+
+KYC and AML Findings
+--------------------
+The KYC agent found that the customer is an existing customer with 8 credit applications and 457 transactions on file over 181 days. However, sanctions and watchlist screening was not performed. The AML agent did not flag any suspicious activity, with a model probability of 0.0 and no breached rules.
+
+
+Data Quality Caveats
+--------------------
+There are no rules listed as not evaluated, indicating that all relevant data was available for assessment.
+
+
+Recommended Next Steps
+----------------------
+Based on the high risk score and breaches of multiple rules, it is recommended that the application be declined. Additionally, the customer's credit history and behavior should be closely monitored to prevent potential future risks. The AML agent's findings suggest that no further action is required regarding suspicious activity.

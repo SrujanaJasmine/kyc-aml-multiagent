@@ -1,0 +1,47 @@
+> **Demonstration run** — scenario 6 of 20: Laundering activity on file  
+> Data source: `system` split, held out from all model training.  
+> Thread `demo-20260816T194713-06_laundering` · generated 2026-08-16 19:47 UTC.
+
+# Compliance Assessment Report
+
+| | |
+|---|---|
+| Customer | CUS_0x434a (Josephinec, Writer) |
+| Assessed | 2026-08-16 19:49 UTC |
+| Agents run | KYC, CDA, AML |
+
+## Verdicts at a glance
+
+| Agent | Verdict | Detail |
+|---|---|---|
+| KYC | Existing | 8 application(s), 551 transaction(s), 181 days on file |
+| CDA | Decline | risk 0.8127 vs 0.28 threshold; 6 rule(s) breached (DELINQ-30-REPORTABLE, DELINQ-COUNT, MINPAY-ONLY, MIX-BAD) |
+| AML | No action | score 0.8159 vs 0.9; roll-up 0/56 flagged, SAR aggregate False |
+
+## Summary
+The credit application of Josephinec, an existing customer, was assessed and resulted in a decline decision due to a high risk score of 81.27%, which exceeds the auto-decline band. The primary reason for this decision is the customer's history of delayed payments, with 21 instances of late payments, significantly exceeding the threshold of 3 occurrences. 
+
+## Credit Assessment
+The credit assessment model assigned a probability of 0.8127, which is above the model threshold of 0.28, indicating a high risk. The decision to decline the application was made due to this high risk score and the breach of two high-severity rules. The top SHAP features driving this decision include outstanding debt, changed credit limit, delay from due date, number of credit cards, and interest rate, all of which increase the risk.
+
+## Policy and Standards Breaches
+Several rules were breached, including:
+- Payment more than 30 days past due: The observed value was 65.0 days, exceeding the threshold of 30 days. This standard exists to identify reportable delinquency rather than administrative delay.
+- More than 3 delayed payments on file: The observed value was 21.0, exceeding the threshold of 3 occurrences. This standard exists because repeated late payments are a strong predictor of default.
+- Paying only the minimum amount due: The observed value was "Yes", which meets the threshold. This standard exists because paying only the minimum amount due is a marker of revolving-debt dependence.
+- Poor credit mix: The observed value was "Bad", which meets the threshold. This standard exists because a narrow or poorly performing mix of account types limits evidence of the borrower's ability to manage different credit forms.
+- More than 6 hard credit inquiries: The observed value was 10.0, exceeding the threshold of 6 inquiries. This standard exists because a cluster of hard inquiries suggests credit-seeking from several lenders at once, which precedes over-extension and application fraud.
+- More than 5 active loans: The observed value was 9.0, exceeding the threshold of 5 loans. This standard exists because numerous simultaneous obligations fragment cash flow and make total exposure harder to verify.
+
+## KYC and AML Findings
+The KYC agent found that the customer is an existing customer with 8 credit applications and 551 transactions on file over 181 days. However, sanctions and watchlist screening was not performed. The AML agent did not flag any suspicious activity, with a model probability of 0.8159, which is below the model threshold of 0.9.
+
+## Data Quality Caveats
+There are no rules listed as not evaluated, indicating that all necessary data was available for the assessment.
+
+## Recommended Next Steps
+Based on the findings, the recommended next steps are to:
+- Review the customer's credit history and delayed payments to understand the reasons behind the high risk score.
+- Verify the customer's current financial situation to determine if there have been any changes since the last credit application.
+- Consider manual review of the application to assess the customer's ability to repay the loan.
+- Monitor the customer's account activity for any suspicious transactions.

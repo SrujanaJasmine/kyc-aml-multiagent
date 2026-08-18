@@ -1,0 +1,41 @@
+> **Demonstration run** — scenario 1 of 20: Laundering activity on file  
+> Data source: `system` split, held out from all model training.  
+> Thread `demo-20260816T194713-01_laundering` · generated 2026-08-16 19:47 UTC.
+
+# Compliance Assessment Report
+
+| | |
+|---|---|
+| Customer | CUS_0x1348 (Sudip Kar-Guptaq, Lawyer) |
+| Assessed | 2026-08-16 19:47 UTC |
+| Agents run | KYC, CDA, AML |
+
+## Verdicts at a glance
+
+| Agent | Verdict | Detail |
+|---|---|---|
+| KYC | Existing | 8 application(s), 195 transaction(s), 181 days on file |
+| CDA | Review | risk 0.3178 vs 0.28 threshold; 4 rule(s) breached (DELINQ-COUNT, UTIL-30-GUIDANCE, MINPAY-ONLY, INQUIRY-6) |
+| AML | Escalate for analyst review | score 0.9409 vs 0.9; MULE-FAN-IN; roll-up 1/10 flagged, SAR aggregate False |
+
+## Summary
+The credit application of Sudip Kar-Guptaq, an existing customer, was assessed and determined to be high risk, with a model score of 31.78% against a threshold of 28%. The primary reason for this assessment is the customer's history of delayed payments, with 19 observed instances against a threshold of 3. This, combined with other factors such as revolving utilization above 30% and paying only the minimum amount due, has led to a decision to review the application manually.
+
+## Credit Assessment
+The credit model score for this application is 31.78%, which exceeds the threshold of 28%, indicating a high-risk application. The decision to review the application manually is based on this score, as well as the presence of four policy breaches. The top SHAP features driving this decision include outstanding debt, credit history age, number of bank accounts, changed credit limit, and number of loans, with outstanding debt and credit history age increasing the risk, while number of bank accounts and changed credit limit decrease the risk.
+
+## Policy and Standards Breaches
+There are four policy breaches associated with this application:
+- More than 3 delayed payments on file: The customer has 19 delayed payments, exceeding the threshold of 3. This is a high-severity breach, as repeated late payments are a strong predictor of default.
+- Revolving utilization above 30%: The customer's utilization is 37.27%, exceeding the threshold of 30%. This is a medium-severity breach, as high utilization can indicate credit dependence.
+- Paying only the minimum amount due: The customer is paying only the minimum amount due, which is a medium-severity breach, as it can indicate revolving-debt dependence.
+- More than 6 hard credit inquiries: The customer has 8 hard credit inquiries, exceeding the threshold of 6. This is a medium-severity breach, as multiple inquiries can indicate credit-seeking behavior.
+
+## KYC and AML Findings
+The AML agent has identified a high-severity breach related to the customer's transaction history, specifically the "MULE-FAN-IN" rule, which indicates collection from multiple unrelated senders. The customer's account has received funds from 22 distinct senders, with 6 receipts in 7 days, exceeding the threshold of 8 distinct senders with 6+ receipts in 7 days. The top SHAP features driving this suspicion include the velocity of incoming transactions, ACH payment format, degree of pair transactions, and degree of incoming unique transactions.
+
+## Data Quality Caveats
+There are no rules not evaluated or missing data reported in the findings, indicating that the assessment is based on complete and available data.
+
+## Recommended Next Steps
+Based on the high-risk assessment and policy breaches, it is recommended that the application be reviewed manually by an analyst. Additionally, the AML findings suggest that the customer's transaction history should be escalated for further review, as the "MULE-FAN-IN" breach indicates potential money-mule activity. The recommended action is to escalate the case for analyst review, given the model score of 94.1% and the presence of high-severity red flags.

@@ -1,0 +1,61 @@
+> Demonstration run — scenario 18 of 20: Established customer, clean profile  
+> Data source: `system` split, held out from all model training.  
+> Thread `demo-20260816T194713-18_clean` · generated 2026-08-16 19:47 UTC.
+
+
+Compliance Assessment Report
+----------------------------
+
+| | |
+|---|---|
+| Customer | CUS_0x1107 (Felsenthalv, Writer) |
+| Assessed | 2026-08-16 19:53 UTC |
+| Agents run | KYC, CDA, AML |
+
+
+Verdicts at a glance
+--------------------
+
+| Agent | Verdict | Detail |
+|---|---|---|
+| KYC | Existing | 8 application(s), 588 transaction(s), 181 days on file |
+| CDA | Decline | risk 0.6697 vs 0.28 threshold; 8 rule(s) breached (DELINQ-30-REPORTABLE, DELINQ-COUNT, UTIL-30-GUIDANCE, MINPAY-ONLY) |
+| AML | No action | score 0.0 vs 0.9; roll-up 0/1 flagged, SAR aggregate False |
+
+
+Summary
+-------
+The credit application of customer Felsenthalv was assessed, resulting in a decline decision due to a high-risk profile. The primary reason for this decision is the customer's history of late payments, with 25 delayed payments on file, exceeding the threshold of 3 occurrences. Additionally, the customer's outstanding debt and changed credit limit contribute to the increased risk.
+
+
+Credit Assessment
+-----------------
+The credit assessment model assigned a probability of 0.6697, exceeding the model threshold of 0.28, indicating a high-risk profile. The decision to decline the application was made due to this high-risk score and the breach of two high-severity rules. The top SHAP features driving this decision include outstanding debt, changed credit limit, delay from due date, interest rate, and the number of credit cards, all of which increase the risk.
+
+
+Policy and Standards Breaches
+-----------------------------
+The following rules were breached:
+- Payment more than 30 days past due: The customer had a delay of 38 days, exceeding the threshold of 30 days. This rule exists to identify delinquency that becomes reportable rather than an administrative delay.
+- More than 3 delayed payments on file: The customer had 25 delayed payments, exceeding the threshold of 3 occurrences. This rule exists to identify a repeated pattern of late payments, which is a strong predictor of default.
+- Revolving utilization above 30%: The customer had a utilization of 40.71%, exceeding the threshold of 30%. This rule exists to advise keeping usage at or below 30% of the total limit.
+- Paying only the minimum amount due: The customer was observed to be paying only the minimum amount due. This rule exists to identify minimum-payment behavior, which is a recognized marker of revolving-debt dependence.
+- Poor credit mix: The customer had a poor credit mix, which limits evidence that the borrower can manage different credit forms.
+- More than 6 hard credit inquiries: The customer had 16 hard credit inquiries, exceeding the threshold of 6 inquiries. This rule exists to identify credit-seeking behavior from several lenders at once.
+- More than 5 active loans: The customer had 8 active loans, exceeding the threshold of 5 loans. This rule exists to identify numerous simultaneous obligations that fragment cash flow.
+- Credit history shorter than 24 months: The customer had a credit history of 11 months, which is shorter than the threshold of 24 months. This rule exists to identify insufficient repayment history for a score to be statistically stable.
+
+
+KYC and AML Findings
+--------------------
+The KYC agent found that the customer is an existing customer with 8 credit applications and 588 transactions on file over 181 days. The AML agent did not flag any suspicious activity, with a probability of 0.0 and no breached rules.
+
+
+Data Quality Caveats
+--------------------
+There are no rules not evaluated or missing data in this assessment.
+
+
+Recommended Next Steps
+----------------------
+The reviewer should verify the customer's income and obligations to ensure that they have the ability to repay the loan. Additionally, the reviewer should review the customer's credit history and utilization to determine if there are any other factors that may affect their creditworthiness. The customer's high-risk profile and breached rules should be carefully considered before making any further decisions.

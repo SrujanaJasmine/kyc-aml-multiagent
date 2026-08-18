@@ -1,0 +1,42 @@
+> **Demonstration run** — scenario 15 of 20: Established customer, clean profile  
+> Data source: `system` split, held out from all model training.  
+> Thread `demo-20260816T194713-15_clean` · generated 2026-08-16 19:47 UTC.
+
+# Compliance Assessment Report
+
+| | |
+|---|---|
+| Customer | CUS_0x107e (Lianaj, Architect) |
+| Assessed | 2026-08-16 19:52 UTC |
+| Agents run | KYC, CDA, AML |
+
+## Verdicts at a glance
+
+| Agent | Verdict | Detail |
+|---|---|---|
+| KYC | Existing | 8 application(s), 307 transaction(s), 180 days on file |
+| CDA | Review | risk 0.0589 vs 0.28 threshold; 5 rule(s) breached (DELINQ-COUNT, UTIL-30-GUIDANCE, MINPAY-ONLY, INQUIRY-6) |
+| AML | No action | score 0.0 vs 0.9; roll-up 0/1 flagged, SAR aggregate False |
+
+## Summary
+The credit application of Lianaj, an existing customer, was assessed and resulted in a review decision due to the low model risk score of 5.9%, but with five breached rules. The most significant reason for this decision is the presence of multiple breached rules, including more than three delayed payments on file, which is a strong predictor of default.
+
+## Credit Assessment
+The credit model assigned a probability of 0.0589, which is below the threshold of 0.28, indicating a low risk. However, the decision to review the application was made due to the breach of five rules. The top SHAP features driving this decision include outstanding debt, credit mix standard, interest rate, month of January, and delay from due date, all of which decrease the risk.
+
+## Policy and Standards Breaches
+The following rules were breached:
+* More than three delayed payments on file: The observed value of 9.0 exceeds the threshold of 3 occurrences. This rule exists because a repeated pattern of late payments is a strong predictor of default.
+* Revolving utilization above 30%: The observed value of 41.26% exceeds the threshold of 30%. This rule exists as a soft signal to indicate potential credit-seeking behavior.
+* Paying only the minimum amount due: The observed value is Yes, which exceeds the threshold. This rule exists because paying only the minimum amount due can lead to revolving-debt dependence.
+* More than six hard credit inquiries: The observed value of 8.0 exceeds the threshold of 6 inquiries. This rule exists because a cluster of hard inquiries can indicate credit-seeking behavior.
+* More than five active loans: The observed value of 6.0 exceeds the threshold of 5 loans. This rule exists because numerous simultaneous obligations can fragment cash flow and make total exposure harder to verify.
+
+## KYC and AML Findings
+The KYC agent found that the customer is an existing customer with eight credit applications and 307 transactions on file over 180 days. The AML agent did not flag any suspicious activity, with a probability of 0.0 and no breached rules.
+
+## Data Quality Caveats
+There are no rules not evaluated or missing data in this assessment.
+
+## Recommended Next Steps
+The reviewer should manually review the application, considering the breached rules and the low model risk score. The reviewer should also verify the customer's credit history and assess the risk of lending to this customer. Additionally, the reviewer may want to consider requesting additional information from the customer to support the application.

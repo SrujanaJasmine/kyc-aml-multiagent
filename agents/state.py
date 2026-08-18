@@ -1,15 +1,9 @@
 """
-Shared state schemas for the Multi-Agent RAG system
-(KYC onboarding / AML screening / Credit Assessment / Explanation / Audit).
-
-Pattern:
-  Supervisor (orchestrator) node reads `assessment_input` (a batch of one or more
-  items, each tagged with its own assessment type) and uses `Send` to fan each
-  item out to the correct specialist worker (KYC / AML / CDA / QUERY).
-  Each worker writes into `completed_agents`, which uses the `operator.add`
-  reducer so results from parallel Sends merge back into the parent GraphState
-  instead of overwriting each other.
-  All workers converge on the Explanation agent, then the Audit agent.
+state.py
+========
+Pydantic schemas for the graph's shared state and for the state passed to a single
+worker. The `operator.add` reducers are what let parallel workers merge their
+results instead of overwriting each other.
 """
 
 import operator
@@ -30,13 +24,13 @@ class GraphState(BaseModel):
     )
     assessment_input: list[dict] = Field(
         description="Batch of assessment items to process. Each dict should "
-        "contain its own 'type' key ('KYC' | 'AML' | 'CDA' | 'QUERY') plus "
+        "contain its own 'type' key ('KYC' | 'AML' | 'CDA') plus "
         "whatever ID/question that specific agent needs."
     )
     completed_agents: Annotated[list[dict], operator.add] = Field(
         default_factory=list,
         description="Accumulated structured outputs from each specialist "
-        "worker agent (KYC/AML/CDA/QUERY). The operator.add reducer lets results "
+        "worker agent (KYC/AML/CDA). The operator.add reducer lets results "
         "from multiple parallel Sends merge instead of clobbering each other.",
     )
     audit_log: Annotated[list[dict], operator.add] = Field(
@@ -53,9 +47,9 @@ class GraphState(BaseModel):
 # Worker State — what an individual specialist agent receives/returns
 # ---------------------------------------------------------------------------
 class WorkerState(BaseModel):
-    """State passed to a single KYC / AML / CDA / QUERY worker via Send."""
+    """State passed to a single KYC / AML / CDA worker via Send."""
 
-    type: Literal["KYC", "AML", "CDA", "QUERY"] = Field(
+    type: Literal["KYC", "AML", "CDA"] = Field(
         description="Which specialist this item is routed to."
     )
     input: dict = Field(

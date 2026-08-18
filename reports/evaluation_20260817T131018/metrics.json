@@ -1,0 +1,202 @@
+{
+  "generated": "2026-08-17T13:10:18.175939+00:00",
+  "split": "system",
+  "credit": {
+    "n_applications": 9392,
+    "n_customers": 1174,
+    "threshold": 0.28,
+    "ablation": {
+      "Model only": {
+        "n": 9392,
+        "positives": 2773,
+        "tp": 2252,
+        "fp": 1351,
+        "fn": 521,
+        "tn": 5268,
+        "precision": 0.625,
+        "recall": 0.8121,
+        "f1": 0.7064,
+        "f2": 0.7662,
+        "accuracy": 0.8007,
+        "flagged": 3603,
+        "flag_rate": 0.383624,
+        "roc_auc": 0.8728,
+        "pr_auc": 0.7263
+      },
+      "Rules only": {
+        "n": 9392,
+        "positives": 2773,
+        "tp": 2742,
+        "fp": 6433,
+        "fn": 31,
+        "tn": 186,
+        "precision": 0.2989,
+        "recall": 0.9888,
+        "f1": 0.459,
+        "f2": 0.6765,
+        "accuracy": 0.3118,
+        "flagged": 9175,
+        "flag_rate": 0.976895
+      },
+      "Combined (agent)": {
+        "n": 9392,
+        "positives": 2773,
+        "tp": 2759,
+        "fp": 6475,
+        "fn": 14,
+        "tn": 144,
+        "precision": 0.2988,
+        "recall": 0.995,
+        "f1": 0.4596,
+        "f2": 0.6787,
+        "accuracy": 0.3091,
+        "flagged": 9234,
+        "flag_rate": 0.983177,
+        "roc_auc": 0.8728,
+        "pr_auc": 0.7263
+      }
+    },
+    "decision_distribution": {
+      "Review": 7142,
+      "Decline": 2092,
+      "Approve": 158
+    },
+    "disagreement": {
+      "n": 5624,
+      "share": 0.5988,
+      "true_positives_in_band": 518,
+      "share_of_all_true_positives": 0.1868
+    },
+    "rule_firing": {
+      "DELINQ-COUNT": 8682,
+      "UTIL-30-GUIDANCE": 5979,
+      "MINPAY-ONLY": 4969,
+      "DELINQ-30-REPORTABLE": 1909,
+      "INQUIRY-6": 3871,
+      "LOAN-COUNT": 2088,
+      "MIX-BAD": 1760,
+      "THIN-FILE": 136,
+      "DTI-36-MANUAL": 37,
+      "DTI-45-CEILING": 37
+    },
+    "mean_breaches": 3.138,
+    "mean_high_severity": 1.136,
+    "seconds_scoring": 0.08,
+    "seconds_rules": 0.38,
+    "applications_per_second": 20448.5
+  },
+  "aml": {
+    "n_transactions": 450354,
+    "n_customers": 1174,
+    "prevalence": 0.000591,
+    "threshold": 0.9,
+    "ablation": {
+      "Model only": {
+        "n": 450354,
+        "positives": 266,
+        "tp": 226,
+        "fp": 80,
+        "fn": 40,
+        "tn": 450008,
+        "precision": 0.7386,
+        "recall": 0.8496,
+        "f1": 0.7902,
+        "f2": 0.8248,
+        "flagged": 306,
+        "flag_rate": 0.000679,
+        "roc_auc": 0.9994,
+        "pr_auc": 0.8693
+      },
+      "Rules only": {
+        "n": 450354,
+        "positives": 266,
+        "tp": 111,
+        "fp": 154509,
+        "fn": 155,
+        "tn": 295579,
+        "precision": 0.0007,
+        "recall": 0.4173,
+        "f1": 0.0014,
+        "f2": 0.0036,
+        "flagged": 154620,
+        "flag_rate": 0.34333
+      },
+      "Combined (agent)": {
+        "n": 450354,
+        "positives": 266,
+        "tp": 239,
+        "fp": 259052,
+        "fn": 27,
+        "tn": 191036,
+        "precision": 0.0009,
+        "recall": 0.8985,
+        "f1": 0.0018,
+        "f2": 0.0046,
+        "flagged": 259291,
+        "flag_rate": 0.575749,
+        "roc_auc": 0.9994,
+        "pr_auc": 0.8693
+      }
+    },
+    "action_distribution": {
+      "No action": 191063,
+      "Escalate for analyst review": 154559,
+      "Enhanced monitoring": 104613,
+      "File SAR \u2014 recommend review": 119
+    },
+    "per_typology_recall": {
+      "CYCLE": {
+        "n": 12,
+        "recall": 1.0
+      },
+      "FAN_IN": {
+        "n": 120,
+        "recall": 0.95
+      },
+      "FAN_OUT": {
+        "n": 52,
+        "recall": 0.9423
+      },
+      "SCATTER_GATHER": {
+        "n": 24,
+        "recall": 0.25
+      },
+      "STRUCTURING": {
+        "n": 58,
+        "recall": 1.0
+      }
+    },
+    "disagreement": {
+      "n": 154688,
+      "share": 0.3435,
+      "true_positives_in_band": 141,
+      "share_of_all_true_positives": 0.5301
+    },
+    "rule_firing": {
+      "SAR-5K": 154620,
+      "CTR-10K": 9018,
+      "RAPID-PASSTHROUGH": 13991,
+      "LAYERING-CYCLE": 263,
+      "MULE-FAN-IN": 167307,
+      "STRUCTURING": 19209,
+      "FUNNEL-ACCOUNT": 448,
+      "VELOCITY-SPIKE": 7375
+    },
+    "alerts_per_day": 1424.7,
+    "seconds_scoring": 3.59,
+    "seconds_rules": 31.85,
+    "transactions_per_second": 12707.3
+  },
+  "kyc": {
+    "n_known": 1174,
+    "n_unknown": 200,
+    "correct_existing": 1174,
+    "correct_new": 200,
+    "accuracy": 1.0,
+    "status_distribution": {
+      "Existing": 1174
+    },
+    "seconds": 68.43,
+    "lookups_per_second": 20.1
+  }
+}

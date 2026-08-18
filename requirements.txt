@@ -1,15 +1,17 @@
+# Configuration — loads .env at import via config.py
+python-dotenv
+
 # Core orchestration
 langgraph==1.2.10
 langgraph-checkpoint-sqlite==3.1.1
 langchain-core==1.5.3
 pydantic==2.13.4
 
-# LLM + MCP tool-calling (db_analyst_agent.py)
-# Groq is used for the DB analyst agent — free tier, OpenAI-compatible.
+# LLM — Groq powers the explanation agent's report synthesis, on the free tier.
+# Optional at runtime: without a key the agent falls back to a deterministic report.
 langchain-groq==1.1.3
-langchain-mcp-adapters==0.3.2
 
-# CSV loading into customer_data.db (customer_db.py)
+# CSV loading into customer_data.db (database/customer_db.py)
 pandas==3.0.2
 numpy
 
@@ -29,3 +31,10 @@ faiss-cpu
 # NOTE: the block above is intentionally unpinned. Install once, confirm
 # everything imports, then pin the resolved versions:
 #     pip freeze | Select-String "xgboost|scikit-learn|joblib|shap|faiss|sentence-transformers|langchain-community|langchain-huggingface|numpy"
+
+# Hyperparameter search — only needed for `--tune`; both training scripts
+# run fine without it and fall back to the default parameter block.
+optuna
+
+# Evaluation figures (evaluate_model.py, evaluate_aml_model.py, evaluate_system.py)
+matplotlib

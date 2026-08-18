@@ -15,7 +15,7 @@ data/
 ├── cleaned_credit/         Output of EDA/credit_eda.ipynb
 │   ├── cleaned_train.csv
 │   └── cleaned_test.csv
-└── simulated/              Output of EDA/AML_to_Credit_Transaction_Generator.ipynb
+└── simulated/              Output of EDA/transaction_generator.ipynb
     ├── customer_profile_train.csv      customer_transactions_train.csv
     └── customer_profile_test.csv       customer_transactions_test.csv
 ```
@@ -28,8 +28,11 @@ data/
 ## Regenerating the derived files
 
 1. `EDA/credit_eda.ipynb` → produces `cleaned_credit/`
-2. `EDA/AML_to_Credit_Transaction_Generator (2).ipynb` → joins AML transactions onto credit customers, produces `simulated/`
-3. `agents/customer_db.py` → loads the CSVs into `customer_data.db`
+2. `EDA/transaction_generator.ipynb` → fits a generative model to the AML reference data and simulates transactions for the credit customers, produces `simulated/`
+3. `python -m database.customer_db` → loads the CSVs into `customer_data.db`
+
+`EDA/transaction_generator_v1_superseded.ipynb` is an earlier version of step 2, kept
+for reference only. It is not the generator the paper describes.
 
 ## A note on size
 

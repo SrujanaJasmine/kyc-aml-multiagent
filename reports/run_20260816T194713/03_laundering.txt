@@ -1,0 +1,53 @@
+> Demonstration run — scenario 3 of 20: Laundering activity on file  
+> Data source: `system` split, held out from all model training.  
+> Thread `demo-20260816T194713-03_laundering` · generated 2026-08-16 19:47 UTC.
+
+
+Compliance Assessment Report
+----------------------------
+
+| | |
+|---|---|
+| Customer | CUS_0xa83a (Niu Shupingq, Musician) |
+| Assessed | 2026-08-16 19:48 UTC |
+| Agents run | KYC, CDA, AML |
+
+
+Verdicts at a glance
+--------------------
+
+| Agent | Verdict | Detail |
+|---|---|---|
+| KYC | Existing | 8 application(s), 424 transaction(s), 180 days on file |
+| CDA | Review | risk 0.1709 vs 0.28 threshold; 1 rule(s) breached (UTIL-30-GUIDANCE) |
+| AML | Enhanced monitoring | score 0.9621 vs 0.9; roll-up 1/20 flagged, SAR aggregate False |
+
+
+Summary
+-------
+The credit application of Niu Shupingq, an existing customer with a history of 8 credit applications and 424 transactions over 180 days, has been assessed. The outcome is a review decision, primarily due to the customer's revolving utilization being above 30%, which, although not a significant risk on its own, contributes to the need for further evaluation. The low model risk score of 17.1% suggests a good credit standing, but the breach of the revolving utilization rule necessitates a closer look.
+
+
+Credit Assessment
+-----------------
+The credit model score is 0.1709, which is below the threshold of 0.28, indicating a low risk. However, the decision is to review the application because one rule was breached. The top SHAP features driving this decision include outstanding debt, which decreases the risk, delay from the due date, which also decreases the risk, and the number of credit cards, which increases the risk. The customer's annual income decreases the risk, suggesting a stable financial situation.
+
+
+Policy and Standards Breaches
+-----------------------------
+One rule was breached: the revolving utilization above 30% rule. The observed value is 36.321405263186186%, which exceeds the threshold of 30%. This rule exists because the Consumer Financial Protection Bureau advises keeping credit utilization at or below 30% of the total limit, as amounts owed account for 30% of a FICO Score. Although this is considered a soft signal and is scored on a sliding scale, it is a factor that contributes to the decision to review the application.
+
+
+KYC and AML Findings
+--------------------
+The KYC findings indicate that the customer is an existing customer with a history of transactions and applications, but no screening was performed due to the lack of sanctions and watchlist screening implementation. The AML findings suggest that the customer's transaction activity has raised suspicion, with a model probability of 0.9621, exceeding the threshold of 0.9. The top SHAP features driving this suspicion include the degree of outgoing unique transactions, the degree of pair transactions, and the velocity of outgoing transactions within a 7-day window.
+
+
+Data Quality Caveats
+--------------------
+There are no rules listed as not evaluated, and no data quality issues were reported in the findings.
+
+
+Recommended Next Steps
+----------------------
+Based on the assessment, the recommended next steps are to review the customer's credit application in more detail, focusing on the revolving utilization and the number of credit cards. Additionally, enhanced monitoring of the customer's transaction activity is recommended due to the suspicious transaction flagged by the AML model. The reviewer should also consider the customer's history and financial situation, as indicated by the credit model score and SHAP features, to make an informed decision about the application.

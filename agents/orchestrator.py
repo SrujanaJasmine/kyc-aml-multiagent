@@ -1,8 +1,13 @@
-"""Orchestrator (supervisor) node — fans out each assessment item via Send."""
+"""
+orchestrator.py
+===============
+Supervisor node. Reads the batch of assessment items and issues one `Send` per
+item to the matching specialist worker, which is what makes them run in parallel.
+"""
 
 from langgraph.types import Send
 
-from state import GraphState
+from agents.state import GraphState
 
 
 def route_to_workers(state: GraphState):
@@ -22,8 +27,6 @@ def route_to_workers(state: GraphState):
             sends.append(Send("aml_agent", {"type": "AML", "input": item}))
         elif item_type == "CDA":
             sends.append(Send("cda_agent", {"type": "CDA", "input": item}))
-        elif item_type == "QUERY":
-            sends.append(Send("db_analyst_agent", {"type": "QUERY", "input": item}))
         else:
             raise ValueError(f"Unknown assessment type: {item_type}")
 

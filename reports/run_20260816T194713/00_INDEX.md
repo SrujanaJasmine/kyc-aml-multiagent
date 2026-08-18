@@ -1,0 +1,40 @@
+# FRAML — End-to-End Demonstration
+
+Generated 2026-08-16 19:47 UTC · 20 scenarios completed
+
+**Data:** `system` split — 1,174 customers held back by `ml_models/data_splits.py` and never seen by the credit model or the AML model during training. Every verdict below is produced on unseen data.
+
+## Scenarios
+
+| # | Scenario | Customer | KYC | Credit | AML | Report |
+|---|---|---|---|---|---|---|
+| 1 | Laundering activity on file | `CUS_0x1348` | Existing | Review | Escalate for analyst review | [01_laundering.md](01_laundering.md) |
+| 2 | Laundering activity on file | `CUS_0x6172` | Existing | Decline | Enhanced monitoring | [02_laundering.md](02_laundering.md) |
+| 3 | Laundering activity on file | `CUS_0xa83a` | Existing | Review | Enhanced monitoring | [03_laundering.md](03_laundering.md) |
+| 4 | Laundering activity on file | `CUS_0x3c39` | Existing | Review | No action | [04_laundering.md](04_laundering.md) |
+| 5 | Laundering activity on file | `CUS_0xa73b` | Existing | Review | Enhanced monitoring | [05_laundering.md](05_laundering.md) |
+| 6 | Laundering activity on file | `CUS_0x434a` | Existing | Decline | No action | [06_laundering.md](06_laundering.md) |
+| 7 | Elevated credit risk | `CUS_0xb95f` | Existing | Decline | No action | [07_high_risk_credit.md](07_high_risk_credit.md) |
+| 8 | Elevated credit risk | `CUS_0xb14` | Existing | Decline | Escalate for analyst review | [08_high_risk_credit.md](08_high_risk_credit.md) |
+| 9 | Elevated credit risk | `CUS_0xb986` | Existing | Review | No action | [09_high_risk_credit.md](09_high_risk_credit.md) |
+| 10 | Elevated credit risk | `CUS_0x29fd` | Existing | Decline | No action | [10_high_risk_credit.md](10_high_risk_credit.md) |
+| 11 | Elevated credit risk | `CUS_0xacbe` | Existing | Decline | No action | [11_high_risk_credit.md](11_high_risk_credit.md) |
+| 12 | Elevated credit risk | `CUS_0x6f38` | Existing | Review | No action | [12_high_risk_credit.md](12_high_risk_credit.md) |
+| 13 | Established customer, clean profile | `CUS_0x1032` | Existing | Review | Escalate for analyst review | [13_clean.md](13_clean.md) |
+| 14 | Established customer, clean profile | `CUS_0x104a` | Existing | Review | Escalate for analyst review | [14_clean.md](14_clean.md) |
+| 15 | Established customer, clean profile | `CUS_0x107e` | Existing | Review | No action | [15_clean.md](15_clean.md) |
+| 16 | Established customer, clean profile | `CUS_0x1096` | Existing | Review | Escalate for analyst review | [16_clean.md](16_clean.md) |
+| 17 | Established customer, clean profile | `CUS_0x10f9` | Existing | Review | Escalate for analyst review | [17_clean.md](17_clean.md) |
+| 18 | Established customer, clean profile | `CUS_0x1107` | Existing | Decline | No action | [18_clean.md](18_clean.md) |
+| 19 | New customer, not on file | `CUS_DEMO_NEW_01` | New | — | — | [19_new.md](19_new.md) |
+| 20 | New customer, not on file | `CUS_DEMO_NEW_02` | New | — | — | [20_new.md](20_new.md) |
+
+## Outcome distribution
+
+- **KYC** — 18 Existing, 2 New
+- **CDA** — 11 Review, 7 Decline
+- **AML** — 9 No action, 6 Escalate for analyst review, 3 Enhanced monitoring
+
+## How to read this
+
+Each scenario ran the full graph: the orchestrator fans the assessment items out to the KYC, credit and AML workers in parallel, their findings merge, the explanation agent writes the report, and the audit agent persists the trail. Where the model and the deterministic policy rules disagree, the case is routed to a human rather than auto-decided — that disagreement is visible in several scenarios below.
